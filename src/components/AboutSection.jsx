@@ -2,25 +2,25 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FaGlobe, FaRobot, FaBullhorn, FaPaintBrush } from "react-icons/fa";
 
-const serviceCards = [
+const services = [
   {
-    title: "Websites & Hosting",
-    desc: "We build scalable websites & apps with full domain + hosting setup.",
+    title: "Web Development & Infrastructure",
+    desc: "We create fast, responsive websites and apps with full domain & hosting setup — getting your brand online smoothly and securely.",
     icon: <FaGlobe className="text-blue-500 text-3xl" />,
   },
   {
     title: "AI Commercials & Marketing",
-    desc: "Create compelling AI-powered campaigns that engage and convert.",
+    desc: "Engage your audience with AI-powered video ads and targeted campaigns across Meta, Google, and more that drive real results.",
     icon: <FaRobot className="text-blue-500 text-3xl" />,
   },
   {
-    title: "Social Media + SEO",
-    desc: "Grow your audience with effective social strategies and smart SEO.",
+    title: "Social Media Management & SEO",
+    desc: "Grow your brand with strategic content, platform management, and smart SEO that boosts visibility and engagement.",
     icon: <FaBullhorn className="text-blue-500 text-3xl" />,
   },
   {
-    title: "Branding",
-    desc: "Craft powerful visual identities that stand out and speak volumes.",
+    title: "Branding & Identity",
+    desc: "Craft a strong brand identity with stunning visuals, memorable logos, and messaging that connects with your audience.",
     icon: <FaPaintBrush className="text-blue-500 text-3xl" />,
   },
 ];
@@ -39,8 +39,7 @@ export default function AboutSection() {
             Strategy that Scales.
           </h2>
           <p className="mt-6 text-gray-300 text-base max-w-md">
-            At Cryza, we blend creativity with tech to build impactful digital
-            experiences. From idea to execution — we help you grow, scale, and lead.
+            At Cryza, we blend creativity and technology to craft meaningful digital experiences. From strategy to execution — we help startups grow, scale, and lead.
           </p>
           <div className="mt-8">
             <button className="bg-blue-600 hover:bg-blue-500 transition px-6 py-3 rounded-xl font-medium">
@@ -49,18 +48,20 @@ export default function AboutSection() {
           </div>
         </div>
 
-        {/* Right: Services Bento Grid */}
-        <div className="grid grid-cols-2 gap-5">
-          {serviceCards.map((card, idx) => (
+        {/* Right: Services Grid */}
+        <div className="grid grid-cols-1 gap-6">
+          {services.map((service, index) => (
             <motion.div
-              key={idx}
-              whileHover={{ scale: 1.03 }}
+              key={index}
+              whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 180 }}
-              className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-3 shadow-lg backdrop-blur-sm hover:border-blue-500 hover:bg-white/10"
+              className="bg-white/5 border border-white/10 rounded-2xl p-6 flex gap-4 items-start shadow-lg backdrop-blur-md hover:border-blue-500 hover:bg-white/10"
             >
-              <div>{card.icon}</div>
-              <h3 className="text-lg font-semibold">{card.title}</h3>
-              <p className="text-sm text-white/70">{card.desc}</p>
+              <div className="mt-1">{service.icon}</div>
+              <div>
+                <h3 className="text-lg font-semibold">{service.title}</h3>
+                <p className="text-sm text-white/70 mt-1">{service.desc}</p>
+              </div>
             </motion.div>
           ))}
         </div>
