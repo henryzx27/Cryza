@@ -7,68 +7,109 @@ import {
   FaPaintBrush,
 } from "react-icons/fa";
 
-const serviceCards = [
+const services = [
   {
     title: "Web Development & Infrastructure",
-    desc: "We create fast, responsive websites and apps with complete domain and hosting setup to get your business online smoothly and securely.",
+    description:
+      "Launch high-performance websites and apps with complete hosting and deployment pipelines.",
     icon: <FaGlobe className="text-blue-500 text-3xl" />,
   },
   {
     title: "AI Commercials & Marketing",
-    desc: "Engage your audience with AI-powered video ads and targeted campaigns across Meta and Google that drive real results.",
+    description:
+      "Hyper-targeted campaigns and AI-generated creatives that convert across all major platforms.",
     icon: <FaRobot className="text-blue-500 text-3xl" />,
   },
   {
-    title: "Social Media Management & SEO",
-    desc: "Grow your brand with strategic social media management and smart SEO techniques that boost your visibility and audience reach.",
+    title: "Social Media & SEO",
+    description:
+      "Organic growth through data-backed SEO and consistent, on-brand social storytelling.",
     icon: <FaBullhorn className="text-blue-500 text-3xl" />,
   },
   {
     title: "Branding & Identity",
-    desc: "Build a strong brand with unique visuals, standout logos, and messaging that leaves a lasting impression.",
+    description:
+      "Create unforgettable brand visuals with cohesive design systems, logos, and messaging.",
     icon: <FaPaintBrush className="text-blue-500 text-3xl" />,
   },
 ];
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.15,
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  }),
+};
+
 export default function AboutSection() {
   return (
-    <section id="about" className="relative py-24 bg-black text-white z-10">
-      <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-start">
-        {/* Left: Description */}
-        <div>
-          <span className="bg-white/10 text-sm px-3 py-1 rounded-full text-gray-300">
+    <section id="about" className="bg-black text-white py-28 px-6 overflow-hidden relative z-10">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Content */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <span className="inline-block bg-white/10 text-sm px-4 py-1 rounded-full text-gray-300 tracking-wide mb-4">
             • Who We Are
           </span>
-          <h2 className="mt-4 text-4xl md:text-5xl font-semibold leading-tight">
-            Design that Delivers.<br />
-            Strategy that Scales.
+          <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
+            Design that Delivers.<br />Strategy that Scales.
           </h2>
-          <p className="mt-6 text-gray-300 text-base max-w-md">
-            At Cryza, we blend creativity with tech to build impactful digital experiences.
-            From idea to execution — we help you grow, scale, and lead.
+          <p className="text-gray-400 text-base max-w-2xl mx-auto">
+            Cryza blends cutting-edge tech with creative vision to launch brands, grow products, and captivate audiences across every screen.
           </p>
-          <div className="mt-8">
-            <button className="bg-blue-600 hover:bg-blue-500 transition px-6 py-3 rounded-xl font-medium">
-              Learn More
-            </button>
-          </div>
-        </div>
+        </motion.div>
 
-        {/* Right: Services Grid (2x2) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {serviceCards.map((card, idx) => (
+        {/* Cards */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {services.map((service, i) => (
             <motion.div
-              key={idx}
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 180 }}
-              className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col gap-4 shadow-lg backdrop-blur-sm hover:border-blue-500 hover:bg-white/10"
+              custom={i}
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              key={i}
+              className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md hover:border-blue-500 transition duration-300 shadow-md hover:shadow-xl"
             >
-              <div>{card.icon}</div>
-              <h3 className="text-lg font-semibold">{card.title}</h3>
-              <p className="text-sm text-white/70">{card.desc}</p>
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-white/10 rounded-xl">{service.icon}</div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
+                  <p className="text-sm text-white/70 leading-relaxed">
+                    {service.description}
+                  </p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
+
+        {/* CTA */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="text-center mt-16"
+        >
+          <a
+            href="#contact"
+            className="inline-block bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl text-white font-medium transition"
+          >
+            Let’s Work Together
+          </a>
+        </motion.div>
       </div>
     </section>
   );
