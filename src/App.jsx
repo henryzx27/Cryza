@@ -1,21 +1,40 @@
 import React from "react";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import BlurryBackground from "./components/BlurryBackground";
-import AboutSection from "./components/AboutSection";
-import Footer from "./components/Footer"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import SmoothScrollWrapper from './components/SmoothScrollWrapper';
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import BlurryBackground from "./components/BlurryBackground";
+
+import Hero from "./components/Hero";
+import AboutSection from "./components/AboutSection";
+import Services from "./pages/Services";
+import WebDesign from "./pages/services/WebDesign";
+import Branding from "./pages/services/Branding";
 
 export default function App() {
   return (
-    <div class="scroll-smooth" className="relative min-h-screen font-satoshi bg-black text-white">
-      
+    <Router>
+      <div className="relative min-h-screen font-satoshi bg-black text-white scroll-smooth">
         <BlurryBackground />
         <Navbar />
-        <Hero />
-        <AboutSection />
+
+        <Routes>
+          <Route path="/" element={
+            <>
+              <Hero />
+              <AboutSection />
+            </>
+          } />
+
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/websites" element={<WebDesign />} />
+          <Route path="/services/branding" element={<Branding />} />
+
+          {/* You can add more routes like /services/ui-ux etc */}
+        </Routes>
+
         <Footer />
-    </div>
+      </div>
+    </Router>
   );
 }
