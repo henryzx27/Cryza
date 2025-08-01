@@ -1,20 +1,23 @@
-import React, { useEffect, useState, useRef } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const links = ["Home", "Work", "Services", "About", "Contact"];
 
 const Navbar = () => {
   const [shrunk, setShrunk] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const lastScrollY = useRef(0);
 
   useEffect(() => {
+    let lastY = window.scrollY;
+
     const handleScroll = () => {
       const currentY = window.scrollY;
-      if (currentY > 20 && currentY > lastScrollY.current) {
+      if (currentY > 10 && currentY > lastY) {
         setShrunk(true);
-      } else if (currentY <= 20) {
+      } else if (currentY <= 10) {
         setShrunk(false);
       }
-      lastScrollY.current = currentY;
+      lastY = currentY;
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -25,94 +28,103 @@ const Navbar = () => {
     <motion.header
       initial={false}
       animate={{
-        width: shrunk ? "88%" : "96%",
-        top: shrunk ? 18 : 12,
-        padding: shrunk ? "0.5rem 1.25rem" : "1rem 2rem",
-        borderRadius: shrunk ? "2rem" : "3rem",
-        backgroundColor: shrunk ? "rgba(15,23,42,0.55)" : "rgba(0,0,0,0)",
-        border: shrunk ? "1px solid rgba(255,255,255,0.1)" : "none",
-        boxShadow: shrunk ? "0 8px 24px rgba(0,0,0,0.2)" : "none",
-        backdropFilter: shrunk ? "blur(16px)" : "none",
+        backgroundColor: shrunk ? "rgba(15,23,42,0.6)" : "rgba(0,0,0,0)",
+        borderRadius: shrunk ? "1.5rem" : "2.5rem",
+        padding: shrunk ? "0.5rem 1.5rem" : "1rem 2rem",
+        width: shrunk ? "88%" : "95%",
+        top: shrunk ? 12 : 8,
+        boxShadow: shrunk
+          ? "0 8px 30px rgba(0,0,0,0.25)"
+          : "0 0 0 rgba(0,0,0,0)",
+        border: shrunk
+          ? "1px solid rgba(255,255,255,0.08)"
+          : "1px solid transparent",
+        backdropFilter: shrunk ? "blur(12px)" : "blur(0px)",
       }}
-      transition={{ type: "spring", stiffness: 180, damping: 24 }}
-      className="fixed left-1/2 -translate-x-1/2 z-50 transition-all duration-300"
-      style={{
-        fontFamily: "'Inter', sans-serif",
-        overflow: "hidden",
+      transition={{
+        type: "tween",
+        ease: "easeOut",
+        duration: shrunk ? 0.3 : 0.15, // quicker restore when scrolling up
       }}
+      className="fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-300"
     >
-      <div className="flex items-center justify-between h-full">
+      <div className="flex items-center justify-between">
         {/* Logo */}
         <a href="/" className="flex items-center gap-3">
-          <span className="bg-white/10 p-2 rounded-full shadow-inner shadow-white/10">
+          <span className="bg-white/10 p-2 rounded-full shadow-inner">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
               <circle cx="16" cy="16" r="14" stroke="#fff" strokeWidth="2" />
               <circle cx="16" cy="16" r="7" fill="#3B82F6" />
             </svg>
           </span>
-          <span className="text-xl font-bold text-white tracking-wide drop-shadow">
-            Cryza
-          </span>
+          <span className="text-white font-bold text-xl">Cryza</span>
         </a>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-6 text-white text-base font-medium">
-          {["Home", "Work", "Services", "About", "Contact"].map((item) => (
+        <nav className="hidden md:flex items-center gap-6 text-white text-sm font-medium">
+          {links.map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="relative px-2 py-1 transition hover:text-blue-400 after:block after:h-0.5 after:bg-blue-400 after:w-0 hover:after:w-full after:transition-all"
+              className="relative group px-2 py-1"
             >
-              {item}
+              <span className="group-hover:text-blue-400 transition">
+                {item}
+              </span>
+              <span className="block h-0.5 bg-blue-400 w-0 group-hover:w-full transition-all duration-300" />
             </a>
           ))}
         </nav>
 
-        {/* CTA */}
-        <motion.button
-          whileHover={{
-            scale: 1.06,
-            boxShadow: "0 0 16px rgba(59, 130, 246, 0.6)",
-          }}
-          className="hidden md:block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-semibold shadow-lg transition"
+        {/* CTA Button */}
+        <motion.a
+          whileHover={{ scale: 1.05 }}
+          href="#contact"
+          className="hidden md:block bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-semibold transition"
         >
           Get In Touch
-        </motion.button>
+        </motion.a>
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden flex flex-col gap-1 items-end"
-          onClick={() => setMobileOpen((o) => !o)}
+          className="md:hidden flex flex-col gap-1"
+          onClick={() => setMobileOpen((prev) => !prev)}
         >
-          <span className="block w-6 h-0.5 bg-white rounded-full" />
-          <span className="block w-6 h-0.5 bg-white rounded-full" />
-          <span className="block w-6 h-0.5 bg-white rounded-full" />
+          <span className="w-6 h-0.5 bg-white rounded-full" />
+          <span className="w-6 h-0.5 bg-white rounded-full" />
+          <span className="w-6 h-0.5 bg-white rounded-full" />
         </button>
       </div>
 
-      {/* Mobile Nav */}
-      {mobileOpen && (
-        <motion.nav
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-          className="md:hidden mt-3 bg-black/70 backdrop-blur-xl p-6 rounded-2xl space-y-4 shadow-xl"
-        >
-          {["Home", "Work", "Services", "About", "Contact"].map((item) => (
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.25 }}
+            className="md:hidden mt-4 bg-black/80 backdrop-blur-xl p-6 rounded-2xl shadow-lg space-y-4"
+          >
+            {links.map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                onClick={() => setMobileOpen(false)}
+                className="block text-white text-center text-base hover:text-blue-400 transition"
+              >
+                {item}
+              </a>
+            ))}
             <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              onClick={() => setMobileOpen(false)}
-              className="block text-white text-center text-lg font-medium hover:text-blue-400 transition"
+              href="#contact"
+              className="block bg-blue-600 text-white text-center py-2 rounded-full font-semibold mt-4 hover:bg-blue-700 transition"
             >
-              {item}
+              Get In Touch
             </a>
-          ))}
-          <button className="w-full bg-blue-600 text-white px-6 py-2 rounded-full font-semibold mt-4 shadow hover:bg-blue-700 transition">
-            Get In Touch
-          </button>
-        </motion.nav>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };
