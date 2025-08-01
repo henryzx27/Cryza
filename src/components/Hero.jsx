@@ -1,74 +1,163 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
-// Helper for floating animation
-const floatingStyles = [
-  "absolute animate-float-slow left-10 top-20",
-  "absolute animate-float-fast right-16 top-1/3",
-  "absolute animate-float-medium left-1/2 bottom-24",
-  "absolute animate-float-slow right-10 bottom-10",
-  "absolute animate-float-slow left-20 top-1/2",      // New icon position
-  "absolute animate-float-medium right-1/4 bottom-1/2", // New icon position
+// --- AnimatedText ---
+const AnimatedText = ({ texts, className }) => {
+  const [index, setIndex] = React.useState(0);
+  const [show, setShow] = React.useState(true);
+  const timeoutRef = useRef();
+
+  useEffect(() => {
+    timeoutRef.current = setTimeout(() => setShow(false), 2200);
+    return () => clearTimeout(timeoutRef.current);
+  }, [index]);
+
+  useEffect(() => {
+    if (!show) {
+      timeoutRef.current = setTimeout(() => {
+        setIndex((i) => (i + 1) % texts.length);
+        setShow(true);
+      }, 400);
+      return () => clearTimeout(timeoutRef.current);
+    }
+  }, [show, texts.length]);
+
+  return (
+    <span
+      className={`${className} inline-block transition-all duration-500 ease-in-out ${
+        show
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 -translate-y-2 pointer-events-none"
+      }`}
+    >
+      {texts[index]}
+    </span>
+  );
+};
+
+// --- Animated Blobs ---
+const blobs = [
+  "bg-gradient-to-br from-blue-500 via-blue-400 to-cyan-400",
+  "bg-gradient-to-br from-pink-500 via-fuchsia-500 to-purple-500",
+  "bg-gradient-to-br from-yellow-400 via-orange-400 to-pink-400",
 ];
-
-const FloatingIcons = () => (
+const blobPositions = [
+  "absolute left-[-40px] top-[-40px] w-32 h-32 md:w-48 md:h-48 blur-2xl opacity-60 animate-blob1",
+  "absolute right-[-30px] top-1/2 w-24 h-24 md:w-40 md:h-40 blur-xl opacity-50 animate-blob2",
+  "absolute left-1/2 bottom-[-40px] -translate-x-1/2 w-36 h-36 md:w-56 md:h-56 blur-2xl opacity-40 animate-blob3",
+];
+const AnimatedBlobs = () => (
   <>
-    {/* Example SVGs: You can replace with your own tech/digital icons */}
-    <svg className={floatingStyles[0]} width="40" height="40" fill="none">
-      <circle cx="20" cy="20" r="18" stroke="#3B82F6" strokeWidth="4" />
-      <rect x="12" y="12" width="16" height="16" rx="4" fill="#3B82F6" opacity="0.3" />
-    </svg>
-    <svg className={floatingStyles[1]} width="36" height="36" fill="none">
-      <rect x="6" y="6" width="24" height="24" rx="6" stroke="#fff" strokeWidth="3" />
-      <path d="M12 18h12" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-    <svg className={floatingStyles[2]} width="32" height="32" fill="none">
-      <polygon points="16,4 28,28 4,28" fill="#60A5FA" opacity="0.5" />
-    </svg>
-    <svg className={floatingStyles[3]} width="38" height="38" fill="none">
-      <rect x="9" y="9" width="20" height="20" rx="5" fill="#fff" opacity="0.1" />
-      <circle cx="19" cy="19" r="8" stroke="#60A5FA" strokeWidth="3" />
-    </svg>
-    {/* New Icon 1: Minimal Globe */}
-    <svg className={floatingStyles[4]} width="34" height="34" fill="none">
-      <circle cx="17" cy="17" r="14" stroke="#60A5FA" strokeWidth="2" />
-      <ellipse cx="17" cy="17" rx="14" ry="6" stroke="#3B82F6" strokeWidth="1" />
-    </svg>
-    {/* New Icon 2: Minimal Wifi */}
-    <svg className={floatingStyles[5]} width="34" height="34" fill="none">
-      <path d="M7 21c6-6 14-6 20 0" stroke="#3B82F6" strokeWidth="2" />
-      <path d="M11 25c4-4 10-4 14 0" stroke="#60A5FA" strokeWidth="2" />
-      <circle cx="17" cy="29" r="2" fill="#3B82F6" />
-    </svg>
+    {blobs.map((bg, i) => (
+      <div
+        key={i}
+        className={`${blobPositions[i]} ${bg} rounded-full pointer-events-none mix-blend-lighten`}
+        style={{ zIndex: 1 }}
+      />
+    ))}
+    <style>
+      {`
+        @keyframes blob1 {
+          0%,100% { transform: scale(1) translateY(0);}
+          50% { transform: scale(1.12) translateY(16px);}
+        }
+        @keyframes blob2 {
+          0%,100% { transform: scale(1) translateY(0);}
+          50% { transform: scale(1.08) translateY(-16px);}
+        }
+        @keyframes blob3 {
+          0%,100% { transform: scale(1) translateY(0);}
+          50% { transform: scale(1.1) translateY(18px);}
+        }
+        .animate-blob1 { animation: blob1 16s ease-in-out infinite; }
+        .animate-blob2 { animation: blob2 18s ease-in-out infinite; }
+        .animate-blob3 { animation: blob3 20s ease-in-out infinite; }
+      `}
+    </style>
   </>
 );
 
+// --- Hero Section ---
 const Hero = () => {
   return (
-    <section className="relative flex items-center justify-center h-screen bg-gradient-to-br from-black via-gray-900 to-blue-900 text-white font-sans overflow-hidden">
-      {/* Floating tech/digital icons */}
-      <FloatingIcons />
+    <section className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0ea5e9] overflow-hidden px-4 sm:px-6 md:px-10 lg:px-16">
+      {/* Blobs */}
+      <AnimatedBlobs />
 
       {/* Content */}
-      <div className="z-10 text-center px-4 max-w-4xl mx-auto">
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="bg-blue-600 text-white text-xs font-medium px-2 py-1 rounded-md">New</span>
-          <span className="text-sm text-white/80">No. 1 Studio of 2025</span>
-        </div>
-        <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-          Design That Connects,<br /> Converts, and Delights
-        </h1>
-        <p className="text-sm md:text-base text-white/70 mb-6">
-          We specialize in crafting unique digital presence that help businesses grow and stand out in their industries.
+      <div className="relative z-10 w-full max-w-3xl text-center py-20">
+        {/* Tagline */}
+        <span className="inline-block mb-6 bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-[10px] font-bold px-4 py-1 rounded-full shadow-md uppercase animate-pulse tracking-wider">
+          Welcome to the Future of Digital
+        </span>
+
+        {/* Heading */}
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-6">
+          <AnimatedText
+            texts={[
+              "Transforming Ideas Into",
+              "Building Brands With",
+              "Crafting Digital Excellence With",
+            ]}
+            className="block"
+          />
+          <AnimatedText
+            texts={[
+              "Impactful Design",
+              "Creative Excellence",
+              "Timeless Branding",
+            ]}
+            className="block bg-gradient-to-r from-blue-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent"
+          />
+        </h2>
+
+        {/* Subheading */}
+        <p className="text-white/80 text-base sm:text-lg font-medium max-w-xl mx-auto mb-10">
+          <AnimatedText
+            texts={[
+              "We create immersive, high-converting digital experiences for startups and brands ready to stand out.",
+              "From strategy to launch, our team blends creativity and technology for results that matter.",
+              "Let’s build your next big thing — websites, apps, and brands that inspire.",
+            ]}
+            className="block"
+          />
         </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-500 transition">
-            Connect With Us
+
+        {/* CTA */}
+        <div className="flex flex-wrap justify-center gap-4 mb-10">
+          <button className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:scale-105 transition-all duration-200">
+            Start Your Project
           </button>
-          <button className="bg-white text-black px-6 py-3 rounded-xl hover:bg-gray-100 transition">
-            Why Cryza?
+          <button className="bg-white/90 text-blue-700 px-6 py-2 rounded-xl font-bold shadow-lg hover:bg-white hover:scale-105 transition-all duration-200">
+            See Our Work
           </button>
+        </div>
+
+        {/* Trust Badges */}
+        <div className="flex flex-wrap justify-center gap-4 text-sm font-semibold text-white/90">
+          <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg shadow">
+            <svg width="16" height="16" fill="none" className="text-blue-400"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="2"/><path d="M5 8l1.5 1.5L11 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            Trusted by 100+ brands
+          </div>
+          <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg shadow">
+            <svg width="16" height="16" fill="none" className="text-yellow-400"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="2"/><path d="M8 4v3l2 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            5+ Years Experience
+          </div>
         </div>
       </div>
+
+      {/* Gradient Animation */}
+      <style>
+        {`
+          @keyframes gradient-x {
+            0%,100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+          .animate-gradient-x {
+            background-size: 200% 200%;
+            animation: gradient-x 6s ease-in-out infinite;
+          }
+        `}
+      </style>
     </section>
   );
 };
