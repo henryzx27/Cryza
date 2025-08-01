@@ -65,7 +65,7 @@ const Navbar = () => {
           {links.map((item) => (
             <a
               key={item}
-              href={`#${item.toLowerCase()}`}
+              href={`/${item.toLowerCase()}`}
               className="relative group px-2 py-1"
             >
               <span className="group-hover:text-blue-400 transition">
