@@ -109,7 +109,7 @@ const Navbar = () => {
             {links.map((item) => (
               <a
                 key={item}
-                href={`#${item.toLowerCase()}`}
+                href={`/${item.toLowerCase()}`}
                 onClick={() => setMobileOpen(false)}
                 className="block text-white text-center text-base hover:text-blue-400 transition"
               >
