@@ -1,32 +1,35 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaLaptopCode, FaBullhorn, FaPaintBrush, FaRobot } from 'react-icons/fa';
 
 const services = [
   {
     id: 'websites',
     title: 'Web Development',
-    description: 'Crafting high-performance websites with clean code and stunning design.',
-    icon: <FaLaptopCode size={24} />,
+    description:
+      'We craft blazing-fast, fully responsive websites that elevate user experience. With optimized performance, robust backend integration, and custom UI/UX, our websites are built to scale with your brand and business goals.',
+    imageUrl: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg',
   },
   {
     id: 'branding',
     title: 'Branding & Identity',
-    description: 'We shape visual identities that speak with consistency, clarity, and confidence.',
-    icon: <FaPaintBrush size={24} />,
+    description:
+      'Your brand is your story. We help shape a strong and cohesive identity with strategic design, meaningful storytelling, logo creation, typography systems, and brand guidelines that resonate across all platforms.',
+    imageUrl: 'https://images.pexels.com/photos/601170/pexels-photo-601170.jpeg',
   },
   {
     id: 'social-seo',
     title: 'Social Media & SEO',
-    description: 'Boost visibility with strategy-led social and modern SEO that ranks.',
-    icon: <FaBullhorn size={24} />,
+    description:
+      'From content strategy to SEO optimization, we create systems that boost discoverability and engagement. Our campaigns are crafted to drive organic traffic and conversions while maintaining your brand voice.',
+    imageUrl: 'https://images.pexels.com/photos/147413/twitter-facebook-together-exchange-of-information-147413.jpeg',
   },
   {
     id: 'ai-marketing',
-    title: 'AI Marketing',
-    description: 'AI-powered campaigns that maximize engagement and conversions.',
-    icon: <FaRobot size={24} />,
+    title: 'AI‑Powered Marketing',
+    description:
+      'Leverage the power of AI to automate, analyze, and personalize. We build smart marketing flows using predictive analytics, retargeting, customer behavior insights, and hyper-targeted campaign tools.',
+    imageUrl: 'https://images.pexels.com/photos/17486101/pexels-photo-17486101.png',
   },
 ];
 
@@ -35,82 +38,93 @@ const fadeUp = {
   visible: (i = 1) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.2, duration: 0.6, ease: 'easeOut' },
+    transition: { delay: i * 0.15, duration: 0.6, ease: 'easeOut' },
   }),
 };
 
 export default function Services() {
   return (
-    <section className="bg-black text-white min-h-screen pt-28 pb-32 px-6 md:px-12 relative">
-      {/* Decorative BG Gradient Circles */}
-      <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-gradient-to-tr from-blue-500/20 to-pink-500/10 rounded-full blur-3xl z-0"></div>
-      <div className="absolute bottom-[-120px] right-[-120px] w-[400px] h-[400px] bg-gradient-to-tr from-purple-500/20 to-blue-500/10 rounded-full blur-3xl z-0"></div>
+    <section className="relative bg-black text-white py-28 overflow-hidden">
+      {/* Gradient glow effects */}
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-blue-400/30 to-purple-500/10 blur-3xl"></div>
+      <div className="absolute -bottom-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-pink-400/20 to-indigo-500/10 blur-3xl"></div>
 
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeUp}
-        className="relative z-10 max-w-3xl mx-auto text-center"
-      >
-        <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-500 bg-clip-text text-transparent mb-4">
-          We Craft & Elevate Brands
-        </h1>
-        <p className="text-white/60 text-lg md:text-xl">
-          At Cryza, we transform bold ideas into immersive digital experiences using design, code,
-          and storytelling.
-        </p>
-      </motion.div>
-
-      <div className="relative z-10 grid md:grid-cols-2 gap-12 mt-24 max-w-6xl mx-auto">
-        {services.map((service, index) => (
-          <motion.div
-            key={service.id}
-            custom={index}
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.4 }}
-            className="bg-white/5 border border-white/10 rounded-3xl p-8 backdrop-blur-md shadow-lg hover:shadow-2xl transition duration-300 group"
-          >
-            <div className="flex items-center gap-4 mb-5">
-              <div className="p-3 bg-white/10 rounded-full text-blue-400 group-hover:scale-110 transition">
-                {service.icon}
-              </div>
-              <h3 className="text-2xl font-semibold text-white">{service.title}</h3>
-            </div>
-            <p className="text-white/70 mb-6 text-base">{service.description}</p>
-            <Link
-              to={`/services/${service.id}`}
-              className="text-blue-400 hover:text-blue-500 font-medium text-sm"
-            >
-              Learn more →
-            </Link>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* CTA Section */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeUp}
-        className="relative z-10 max-w-4xl mx-auto mt-32 text-center"
-      >
-        <h2 className="text-3xl md:text-5xl font-semibold text-white mb-6">
-          Ready to launch your next big idea?
-        </h2>
-        <p className="text-white/60 mb-8">
-          Let’s turn your vision into something real. Book a free consultation today.
-        </p>
-        <Link
-          to="/contact"
-          className="inline-block bg-blue-600 hover:bg-blue-700 transition text-white font-medium px-6 py-3 rounded-xl"
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
+        {/* Section Title */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeUp}
+          className="text-center mb-24"
         >
-          Get Started
-        </Link>
-      </motion.div>
+          <h2 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+            Premium Digital Services
+          </h2>
+          <p className="text-white/60 mt-4 text-lg max-w-xl mx-auto">
+            Everything you need to build, grow, and scale your digital presence — with unmatched quality and attention to detail.
+          </p>
+        </motion.div>
+
+        {/* Services */}
+        <div className="grid gap-24">
+          {services.map((svc, idx) => (
+            <motion.div
+              key={svc.id}
+              custom={idx}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.4 }}
+              variants={fadeUp}
+              className={`flex flex-col md:flex-row items-center gap-12 ${
+                idx % 2 !== 0 ? 'md:flex-row-reverse' : ''
+              }`}
+            >
+              <div className="w-full md:w-1/2 overflow-hidden rounded-3xl shadow-2xl border border-white/10">
+                <img
+                  src={svc.imageUrl}
+                  alt={svc.title}
+                  className="w-full h-[340px] md:h-[420px] object-cover"
+                />
+              </div>
+              <div className="w-full md:w-1/2 space-y-5">
+                <h3 className="text-3xl md:text-4xl font-semibold">{svc.title}</h3>
+                <p className="text-white/70 text-lg leading-relaxed">
+                  {svc.description}
+                </p>
+                <Link
+                  to={`/services/${svc.id}`}
+                  className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-white font-medium hover:scale-105 transition"
+                >
+                  Learn More →
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeUp}
+          className="text-center mt-36"
+        >
+          <h3 className="text-4xl md:text-5xl font-bold mb-4">
+            Let’s Build Your Future, Together
+          </h3>
+          <p className="text-white/60 max-w-2xl mx-auto mb-8 text-lg">
+            Whether you're starting from scratch or scaling up, we’re here to craft the digital experiences your brand deserves.
+          </p>
+          <Link
+            to="/contact"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-300"
+          >
+            Book Your Free Strategy Call
+          </Link>
+        </motion.div>
+      </div>
     </section>
   );
 }
