@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -25,12 +25,13 @@ export default function App() {
               <AboutSection />
             </>
           } />
-
+          
           <Route path="/services" element={<Services />} />
           <Route path="/services/websites" element={<WebDesign />} />
           <Route path="/services/branding" element={<Branding />} />
 
-          {/* You can add more routes like /services/ui-ux etc */}
+          {/* 👇 Catch-all route for undefined paths */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 
         <Footer />
