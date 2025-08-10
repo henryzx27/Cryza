@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 // --- AnimatedText ---
 const AnimatedText = ({ texts, className }) => {
@@ -78,6 +79,8 @@ const AnimatedBlobs = () => (
 
 // --- Hero Section ---
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0ea5e9] overflow-hidden px-4 sm:px-6 md:px-10 lg:px-16">
       {/* Blobs */}
@@ -124,10 +127,16 @@ const Hero = () => {
 
         {/* CTA */}
         <div className="flex flex-wrap justify-center gap-4 mb-10">
-          <button className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:scale-105 transition-all duration-200">
+          <button
+            className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:scale-105 transition-all duration-200"
+            onClick={() => navigate("/services")}
+          >
             Start Your Project
           </button>
-          <button className="bg-white/90 text-blue-700 px-6 py-2 rounded-xl font-bold shadow-lg hover:bg-white hover:scale-105 transition-all duration-200">
+          <button
+            className="bg-white/90 text-blue-700 px-6 py-2 rounded-xl font-bold shadow-lg hover:bg-white hover:scale-105 transition-all duration-200"
+            onClick={() => navigate("/services")}
+          >
             See Our Work
           </button>
         </div>
@@ -135,11 +144,29 @@ const Hero = () => {
         {/* Trust Badges */}
         <div className="flex flex-wrap justify-center gap-4 text-sm font-semibold text-white/90">
           <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg shadow">
-            <svg width="16" height="16" fill="none" className="text-blue-400"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="2"/><path d="M5 8l1.5 1.5L11 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <svg width="16" height="16" fill="none" className="text-blue-400">
+              <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="2" />
+              <path
+                d="M5 8l1.5 1.5L11 5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
             Trusted by 100+ brands
           </div>
           <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg shadow">
-            <svg width="16" height="16" fill="none" className="text-yellow-400"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="2"/><path d="M8 4v3l2 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <svg width="16" height="16" fill="none" className="text-yellow-400">
+              <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="2" />
+              <path
+                d="M8 4v3l2 1"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
             5+ Years Experience
           </div>
         </div>
