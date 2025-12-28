@@ -131,13 +131,13 @@ const Hero = () => {
             className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:scale-105 transition-all duration-200"
             onClick={() => navigate("/services")}
           >
-            Start Your Project
+            Our Services
           </button>
           <button
             className="bg-white/90 text-blue-700 px-6 py-2 rounded-xl font-bold shadow-lg hover:bg-white hover:scale-105 transition-all duration-200"
             onClick={() => navigate("/services")}
           >
-            See Our Work
+            Start Your Project
           </button>
         </div>
 
@@ -154,7 +154,7 @@ const Hero = () => {
                 strokeLinejoin="round"
               />
             </svg>
-            Trusted by 100+ brands
+            Trusted by brands
           </div>
           <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-lg shadow">
             <svg width="16" height="16" fill="none" className="text-yellow-400">
@@ -167,7 +167,7 @@ const Hero = () => {
                 strokeLinejoin="round"
               />
             </svg>
-            5+ Years Experience
+            Years of Experience
           </div>
         </div>
       </div>
