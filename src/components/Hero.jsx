@@ -2,26 +2,105 @@ import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 
-// --- Visible Particle Background ---
-const ParticleBackground = () => {
+// --- Pixel Fabric / Liquid Grid Background ---
+const PixelFabricBackground = () => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        let animationFrameId;
-        let particles = [];
+        const ctx = canvas.getContext("2d");
+        let w, h, animationId;
         
-        // Configuration
-        const particleCount = 60; 
-        const mouseDistance = 250; 
+        // Physics Config
+        const spacing = 42;            // More breathing space
+        const mouseRadius = 180;       // Smaller interaction zone
+        const repulsionStrength = 6;   // MUCH softer push
+        const springStrength = 0.035;  // Gentle return
+        const friction = 0.97;         // Heavy damping (key)
+        
+        let points = [];
+        let mouse = { x: -500, y: -500 };
 
-        let mouse = { x: null, y: null };
+        class Point {
+            constructor(x, y) {
+                this.ox = x; // Original X
+                this.oy = y; // Original Y
+                this.x = x;  // Current X
+                this.y = y;  // Current Y
+                this.vx = 0; // Velocity X
+                this.vy = 0; // Velocity Y
+                // Color variation: Cyan to Violet
+                this.color = Math.random() > 0.5 ? '#06b6d4' : '#8b5cf6';
+                this.size = Math.random() * 1.5 + 1;
+            }
 
-        const handleResize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initParticles();
+            update() {
+                // 1. Mouse Interaction (Repulsion)
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+
+                if (dist < mouseRadius) {
+                    const angle = Math.atan2(dy, dx);
+                    const force = (mouseRadius - dist) / mouseRadius;
+                    const push = force * repulsionStrength;
+                    
+                    this.vx -= Math.cos(angle) * push * 0.35;
+                    this.vy -= Math.sin(angle) * push * 0.35;
+                }
+
+                // 2. Spring Physics (Return to Home)
+                const dxHome = this.ox - this.x;
+                const dyHome = this.oy - this.y;
+                
+                this.vx += dxHome * springStrength;
+                this.vy += dyHome * springStrength;
+
+                // 3. Friction & Movement
+                this.vx *= friction;
+                this.vy *= friction;
+                
+                this.x += this.vx;
+                this.y += this.vy;
+            }
+
+            draw() {
+                // Glow effect based on velocity
+                const speed = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+                const alpha = Math.min(0.2 + speed * 0.1, 0.8);
+                
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = this.color;
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        const initPoints = () => {
+            points = [];
+            const cols = Math.ceil(w / spacing);
+            const rows = Math.ceil(h / spacing);
+            
+            // Center the grid
+            const offsetX = (w - (cols * spacing)) / 2;
+            const offsetY = (h - (rows * spacing)) / 2;
+
+            for(let i = 0; i <= cols; i++) {
+                for(let j = 0; j <= rows; j++) {
+                    const x = offsetX + i * spacing;
+                    const y = offsetY + j * spacing;
+                    points.push(new Point(x, y));
+                }
+            }
+        };
+
+        const resize = () => {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            initPoints();
         };
 
         const handleMouseMove = (e) => {
@@ -30,96 +109,40 @@ const ParticleBackground = () => {
         };
 
         const handleMouseLeave = () => {
-            mouse.x = null;
-            mouse.y = null;
-        };
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.5; 
-                this.vy = (Math.random() - 0.5) * 0.5;
-                this.size = Math.random() * 2 + 1;
-                this.baseX = this.x;
-                this.baseY = this.y;
-                // Colors: Blue/White mix
-                this.color = Math.random() > 0.5 ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.15)';
-            }
-
-            update() {
-                // Interactive Movement
-                if (mouse.x != null) {
-                    let dx = mouse.x - this.x;
-                    let dy = mouse.y - this.y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance < mouseDistance) {
-                        const forceDirectionX = dx / distance;
-                        const forceDirectionY = dy / distance;
-                        const force = (mouseDistance - distance) / mouseDistance;
-                        const repulsion = force * 4; 
-                        
-                        this.vx -= forceDirectionX * repulsion * 0.05;
-                        this.vy -= forceDirectionY * repulsion * 0.05;
-                    }
-                }
-
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Friction
-                this.vx *= 0.98;
-                this.vy *= 0.98;
-
-                // Loop
-                if (this.x < 0) this.x = canvas.width;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.y < 0) this.y = canvas.height;
-                if (this.y > canvas.height) this.y = 0;
-            }
-
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        const initParticles = () => {
-            particles = [];
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
+            mouse.x = -500;
+            mouse.y = -500;
         };
 
         const animate = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
+            ctx.clearRect(0, 0, w, h);
+            
+            // Draw connections (Optional: Removed for cleaner dots look, 
+            // but can enable for "fabric" lines. Let's stick to dots for now per "Pixel" concept 
+            // but add a subtle background wave to the points themselves)
+
+            points.forEach(p => {
                 p.update();
                 p.draw();
             });
-            animationFrameId = requestAnimationFrame(animate);
+
+            animationId = requestAnimationFrame(animate);
         };
 
-        initParticles();
-        handleResize();
-        
-        window.addEventListener('resize', handleResize);
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseout', handleMouseLeave);
+        resize();
+        window.addEventListener("resize", resize);
+        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("mouseout", handleMouseLeave);
         animate();
 
         return () => {
-            window.removeEventListener('resize', handleResize);
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseout', handleMouseLeave);
-            cancelAnimationFrame(animationFrameId);
+            window.removeEventListener("resize", resize);
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseout", handleMouseLeave);
+            cancelAnimationFrame(animationId);
         };
     }, []);
 
-    return <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none mix-blend-screen" />;
+    return <canvas ref={canvasRef} className="absolute inset-0 z-0 bg-[#020408]" />;
 };
 
 // --- Hero Component ---
@@ -127,28 +150,23 @@ const Hero = () => {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#020408] overflow-hidden pt-10">
       
-      {/* --- Layers --- */}
-      
-      {/* 1. Visible Grid Pattern (Base) */}
-      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]" />
+      {/* 1. Pixel Fabric Background */}
+      <PixelFabricBackground />
 
-      {/* 2. Interactive Particles */}
-      <ParticleBackground />
+      {/* 2. Gradient Vignette Overlay (Enhanced focus) */}
+      <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_800px_at_center,transparent_0%,#020408_95%)]" />
 
-      {/* 3. Gradient Vignette */}
-      <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,#020408_90%)]" />
-
-      {/* --- Content (Strictly Centered) --- */}
+      {/* 3. Content (Strict Center) */}
       <div className="relative z-20 w-full max-w-5xl mx-auto px-6 text-center flex flex-col items-center">
         
-        {/* Badge: Gentle Fade In */}
+         {/* Badge */}
         {/* <div className="animate-fade-in opacity-0 [animation-delay:200ms] inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md shadow-lg shadow-blue-500/5">
             <Sparkles className="w-3.5 h-3.5 text-blue-400" />
             <span className="text-xs font-bold tracking-widest text-white/70 uppercase">Powered by AI + Design</span>
         </div> */}
 
         {/* Headline: Anime-Style Staggered Reveal */}
-        <h1 className="text-6xl md:text-8xl lg:text-8xl font-bold font-heading tracking-tight leading-[0.95] mb-8 drop-shadow-2xl">
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold font-heading tracking-tight leading-[0.95] mb-8 drop-shadow-2xl">
             {/* Split "We Build for" */}
             <div className="block overflow-hidden pb-2">
                 {"We Build for".split(" ").map((word, i) => (
@@ -177,7 +195,7 @@ const Hero = () => {
             Premium digital experiences crafted to cut through the noise <br className="hidden md:block"/> and position your brand as the industry leader.
         </p>
 
-        {/* CTAs: Super Hover Effects */}
+        {/* CTAs */}
         <div className="animate-fade-in opacity-0 [animation-delay:1100ms] flex flex-col sm:flex-row items-center justify-center gap-6 w-full">
             
             {/* Primary Button with "Sheen" Effect */}
