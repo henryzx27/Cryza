@@ -166,7 +166,7 @@ const Hero = () => {
         </div> */}
 
         {/* Headline: Anime-Style Staggered Reveal */}
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold font-heading tracking-tight leading-[0.95] mb-8 drop-shadow-2xl">
+        <h1 className="text-6xl md:text-8xl lg:text-7xl font-bold font-heading tracking-tight leading-[0.95] mb-8 drop-shadow-2xl">
             {/* Split "We Build for" */}
             <div className="block overflow-hidden pb-2">
                 {"We Build for".split(" ").map((word, i) => (
@@ -191,33 +191,50 @@ const Hero = () => {
         </h1>
 
         {/* Subheadline */}
-        <p className="animate-fade-in opacity-0 [animation-delay:900ms] text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto mb-14 leading-relaxed font-light">
-            Premium digital experiences crafted to cut through the noise <br className="hidden md:block"/> and position your brand as the industry leader.
+        <p className="animate-fade-in opacity-0 [animation-delay:900ms] text-sm md:text-base text-slate-400 max-w-xl mx-auto mb-12 leading-relaxed font-light">
+            Premium digital experiences crafted to cut through the noise
+        and position your brand as the industry leader.
         </p>
 
-        {/* CTAs */}
-        <div className="animate-fade-in opacity-0 [animation-delay:1100ms] flex flex-col sm:flex-row items-center justify-center gap-6 w-full">
-            
-            {/* Primary Button with "Sheen" Effect */}
-            <Link 
-                to="/contact" 
-                className="relative overflow-hidden group w-full sm:w-auto h-14 px-10 rounded-full bg-blue-600 text-white font-bold text-lg flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all hover:shadow-[0_0_40px_rgba(37,99,235,0.6)] hover:-translate-y-1"
-            >
-                {/* Sheen Element */}
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:animate-sheen" />
-                
-                <span className="relative z-10 flex items-center gap-2">
-                    Start a Project <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-            </Link>
 
-            {/* Secondary Button */}
-            <Link 
-                to="/work" 
-                className="group w-full sm:w-auto h-14 px-10 rounded-full border border-white/10 text-white font-medium text-lg flex items-center justify-center backdrop-blur-sm transition-all hover:bg-white/5 hover:border-white/20"
-            >
-                View Services
-            </Link>
+        {/* CTAs */}
+        <div className="animate-fade-in opacity-0 [animation-delay:1100ms] 
+                        flex flex-col sm:flex-row items-center justify-center gap-5 w-full">
+        
+        {/* Primary Button */}
+        <Link 
+            to="/contact" 
+            className="relative overflow-hidden group w-full sm:w-auto 
+                    h-12 px-8 rounded-full 
+                    bg-blue-600 text-white font-semibold text-base 
+                    flex items-center justify-center gap-2
+                    shadow-[0_0_16px_rgba(37,99,235,0.35)]
+                    transition-all hover:shadow-[0_0_28px_rgba(37,99,235,0.5)]
+                    hover:-translate-y-0.5"
+        >
+            <div className="absolute inset-0 bg-gradient-to-r 
+                            from-transparent via-white/20 to-transparent 
+                            -translate-x-[100%] group-hover:animate-sheen" />
+            
+            <span className="relative z-10 flex items-center gap-2">
+            Start a Project 
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </span>
+        </Link>
+
+        {/* Secondary Button */}
+        <Link 
+            to="/work" 
+            className="group w-full sm:w-auto 
+                    h-12 px-8 rounded-full 
+                    border border-white/10 
+                    text-white font-medium text-base 
+                    flex items-center justify-center 
+                    backdrop-blur-sm transition-all 
+                    hover:bg-white/5 hover:border-white/20"
+        >
+            View Services
+        </Link>
         </div>
 
       </div>
