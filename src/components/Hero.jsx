@@ -1,225 +1,234 @@
 import React, { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { ArrowRight, Sparkles } from "lucide-react";
 
-// --- Background Components ---
-const Background = () => (
-  <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-[#020408]">
-    {/* Deep Atmospheric Gradient */}
-    <div className="absolute inset-0 bg-gradient-to-b from-[#020408] via-[#04060C] to-[#080C16]" />
-
-    {/* Subtle Grid */}
-    <div 
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
-        }}
-    />
-    
-    {/* Grain Texture */}
-    <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay">
-        <svg className="w-full h-full"><filter id="f-grain"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" /></filter><rect width="100%" height="100%" filter="url(#f-grain)" /></svg>
-    </div>
-
-    {/* Soft glows */}
-    <div className="absolute top-[-20%] right-[-10%] w-[80vw] h-[80vw] bg-blue-900/10 rounded-full blur-[150px] opacity-30 mix-blend-screen" />
-    <div className="absolute bottom-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-indigo-900/10 rounded-full blur-[120px] opacity-20 mix-blend-screen" />
-  </div>
-);
-
-// --- Visual: Chaos to Order ---
-const TransformationVisual = () => {
-    const containerRef = useRef(null);
-    const partsRef = useRef([]);
+// --- Visible Particle Background ---
+const ParticleBackground = () => {
+    const canvasRef = useRef(null);
 
     useEffect(() => {
-        const ctx = gsap.context(() => {
-            const tl = gsap.timeline({ repeat: -1, repeatDelay: 2, yoyo: true });
-            const elements = partsRef.current;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        let animationFrameId;
+        let particles = [];
+        
+        // Configuration
+        const particleCount = 60; 
+        const mouseDistance = 250; 
 
-            // 1. Initial State: Disorganized / Messy
-            gsap.set(elements, {
-                x: (i) => gsap.utils.random(-30, 30),
-                y: (i) => gsap.utils.random(-30, 30),
-                rotation: (i) => gsap.utils.random(-6, 6),
-                scale: 0.95,
-                opacity: 0.7,
-                filter: "blur(3px) grayscale(50%)",
-                boxShadow: "none",
-                backgroundColor: "rgba(30, 41, 59, 0.4)", // Dim slate
-                borderColor: "rgba(255,255,255,0.05)"
+        let mouse = { x: null, y: null };
+
+        const handleResize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        };
+
+        const handleMouseMove = (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        };
+
+        const handleMouseLeave = () => {
+            mouse.x = null;
+            mouse.y = null;
+        };
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5; 
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                // Colors: Blue/White mix
+                this.color = Math.random() > 0.5 ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.15)';
+            }
+
+            update() {
+                // Interactive Movement
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < mouseDistance) {
+                        const forceDirectionX = dx / distance;
+                        const forceDirectionY = dy / distance;
+                        const force = (mouseDistance - distance) / mouseDistance;
+                        const repulsion = force * 4; 
+                        
+                        this.vx -= forceDirectionX * repulsion * 0.05;
+                        this.vy -= forceDirectionY * repulsion * 0.05;
+                    }
+                }
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Friction
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+
+                // Loop
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        const initParticles = () => {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        };
+
+        const animate = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
             });
+            animationFrameId = requestAnimationFrame(animate);
+        };
 
-            // 2. Transformation: Snap to Grid / Clean
-            tl.to(elements, {
-                x: 0,
-                y: 0,
-                rotation: 0,
-                scale: 1,
-                opacity: 1,
-                filter: "blur(0px) grayscale(0%)",
-                backgroundColor: "rgba(30, 41, 59, 0.5)", // Cleaner slate
-                borderColor: "rgba(59,130,246,0.2)", // Subtle Blue Border
-                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
-                duration: 2,
-                stagger: { amount: 0.4, from: "start" },
-                ease: "power3.inOut"
-            })
-            // 3. Activation: Blue Glow Pulse to signify "Conversion"
-            .to(elements, {
-                borderColor: "#3b82f6",
-                boxShadow: "0 0 20px rgba(59,130,246,0.3)",
-                duration: 0.6,
-                ease: "power2.out"
-            }, "-=0.2");
+        initParticles();
+        handleResize();
+        
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseout', handleMouseLeave);
+        animate();
 
-        }, containerRef);
-        return () => ctx.revert();
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseout', handleMouseLeave);
+            cancelAnimationFrame(animationFrameId);
+        };
     }, []);
 
-    const addRef = (el) => { if (el && !partsRef.current.includes(el)) partsRef.current.push(el); };
-
-    return (
-        <div ref={containerRef} className="relative w-full max-w-[440px] aspect-[4/5] bg-white/[0.02] rounded-2xl border border-white/5 p-6 flex flex-col gap-4 backdrop-blur-sm shadow-2xl">
-            {/* Window Dots */}
-            <div className="flex gap-2 opacity-20 mb-2">
-                <div className="w-3 h-3 rounded-full bg-white" />
-                <div className="w-3 h-3 rounded-full bg-white" />
-                <div className="w-3 h-3 rounded-full bg-white" />
-            </div>
-
-            {/* Header */}
-            <div ref={addRef} className="h-12 w-full rounded-lg bg-slate-800/50 flex items-center justify-between px-4 border border-white/5">
-                <div className="w-8 h-8 rounded bg-blue-500/20" />
-                <div className="w-24 h-2 rounded bg-white/10" />
-            </div>
-
-            {/* Hero Content Area */}
-            <div ref={addRef} className="flex-1 w-full rounded-lg bg-gradient-to-br from-slate-800/40 to-slate-900/40 border border-white/5 relative overflow-hidden flex flex-col justify-end p-4">
-                 <div className="w-full h-full absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-luminosity" />
-                 <div className="relative z-10 w-2/3 h-4 rounded bg-white/20 mb-2" />
-                 <div className="relative z-10 w-1/2 h-3 rounded bg-white/10" />
-            </div>
-
-            {/* Feature Row */}
-            <div className="flex gap-4 h-24">
-                 <div ref={addRef} className="flex-1 rounded-lg bg-slate-800/30 border border-white/5 p-3 flex flex-col justify-between">
-                     <div className="w-8 h-8 rounded-full bg-blue-500/10" />
-                     <div className="w-full h-2 rounded bg-white/5" />
-                 </div>
-                 <div ref={addRef} className="flex-1 rounded-lg bg-slate-800/30 border border-white/5 p-3 flex flex-col justify-between">
-                     <div className="w-8 h-8 rounded-full bg-blue-500/10" />
-                     <div className="w-full h-2 rounded bg-white/5" />
-                 </div>
-            </div>
-
-            {/* CTA Bar */}
-            <div ref={addRef} className="h-14 w-full rounded-lg bg-blue-600 flex items-center justify-center shadow-lg transform origin-center">
-                 <div className="w-32 h-3 rounded-full bg-white/90" />
-            </div>
-        </div>
-    );
+    return <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none mix-blend-screen" />;
 };
 
-// --- Page Component ---
+// --- Hero Component ---
 const Hero = () => {
-  const navigate = useNavigate();
-  const heroRef = useRef(null);
-  
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-        // Entrance: Soft staggered reveal
-        gsap.from(".anim-item", {
-            y: 30,
-            opacity: 0,
-            duration: 1.2,
-            stagger: 0.1,
-            ease: "power2.out",
-            delay: 0.2
-        });
-        
-        // Entrance: Visual reveal
-        gsap.from(".visual-container", {
-            x: 50,
-            opacity: 0,
-            duration: 1.5,
-            ease: "power2.out",
-            delay: 0.4
-        });
-
-    }, heroRef);
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section ref={heroRef} className="relative min-h-screen flex items-center justify-center bg-obsidian text-white overflow-hidden px-6 lg:px-12 py-20 lg:py-0">
-      <Background />
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-[#020408] overflow-hidden pt-10">
+      
+      {/* --- Layers --- */}
+      
+      {/* 1. Visible Grid Pattern (Base) */}
+      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]" />
 
-      <div className="container relative z-10 mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+      {/* 2. Interactive Particles */}
+      <ParticleBackground />
+
+      {/* 3. Gradient Vignette */}
+      <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,#020408_90%)]" />
+
+      {/* --- Content (Strictly Centered) --- */}
+      <div className="relative z-20 w-full max-w-5xl mx-auto px-6 text-center flex flex-col items-center">
         
-        {/* LEFT: Copy */}
-        <div className="max-w-2xl text-center lg:text-left mx-auto lg:mx-0">
+        {/* Badge: Gentle Fade In */}
+        {/* <div className="animate-fade-in opacity-0 [animation-delay:200ms] inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md shadow-lg shadow-blue-500/5">
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+            <span className="text-xs font-bold tracking-widest text-white/70 uppercase">Powered by AI + Design</span>
+        </div> */}
+
+        {/* Headline: Anime-Style Staggered Reveal */}
+        <h1 className="text-6xl md:text-8xl lg:text-8xl font-bold font-heading tracking-tight leading-[0.95] mb-8 drop-shadow-2xl">
+            {/* Split "We Build for" */}
+            <div className="block overflow-hidden pb-2">
+                {"We Build for".split(" ").map((word, i) => (
+                    <span 
+                        key={i} 
+                        className="inline-block animate-slide-up opacity-0 mr-4"
+                        style={{ animationDelay: `${300 + (i * 100)}ms` }}
+                    >
+                        {word}
+                    </span>
+                ))}
+            </div>
+            {/* Split "Attention." */}
+            <div className="block overflow-hidden pb-4">
+                 <span 
+                    className="inline-block animate-slide-up opacity-0 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400"
+                    style={{ animationDelay: '600ms' }}
+                 >
+                    Attention.
+                 </span>
+            </div>
+        </h1>
+
+        {/* Subheadline */}
+        <p className="animate-fade-in opacity-0 [animation-delay:900ms] text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto mb-14 leading-relaxed font-light">
+            Premium digital experiences crafted to cut through the noise <br className="hidden md:block"/> and position your brand as the industry leader.
+        </p>
+
+        {/* CTAs: Super Hover Effects */}
+        <div className="animate-fade-in opacity-0 [animation-delay:1100ms] flex flex-col sm:flex-row items-center justify-center gap-6 w-full">
             
-            {/* Badge */}
-            {/* <div className="anim-item mb-8 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-md">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+            {/* Primary Button with "Sheen" Effect */}
+            <Link 
+                to="/contact" 
+                className="relative overflow-hidden group w-full sm:w-auto h-14 px-10 rounded-full bg-blue-600 text-white font-bold text-lg flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all hover:shadow-[0_0_40px_rgba(37,99,235,0.6)] hover:-translate-y-1"
+            >
+                {/* Sheen Element */}
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:animate-sheen" />
+                
+                <span className="relative z-10 flex items-center gap-2">
+                    Start a Project <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
-                <span className="text-xs font-semibold tracking-widest text-blue-400 uppercase">Growth Driven Design</span>
-            </div> */}
+            </Link>
 
-            {/* Headline */}
-            <h1 className="anim-item text-5xl sm:text-6xl lg:text-7xl font-bold font-heading text-white leading-[1.05] tracking-tight mb-6">
-                We Build Digital <br/>
-                Experiences That <br/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Convert.</span>
-            </h1>
-
-            {/* Subheadline */}
-            <p className="anim-item text-lg text-slate-400 font-sans mb-10 leading-relaxed max-w-lg mx-auto lg:mx-0 font-light">
-                Strategy, design, and development tailored to help brands <span className="text-slate-200 font-medium">grow faster</span>, stand out online, and turn visitors into customers.
-            </p>
-
-            {/* CTAs */}
-            <div className="anim-item flex flex-col sm:flex-row items-center lg:items-start gap-5 mb-12">
-                <button 
-                  onClick={() => navigate('/contact')}
-                  className="w-full sm:w-auto h-14 px-8 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-bold shadow-[0_4px_20px_rgba(37,99,235,0.3)] transition-all hover:scale-[1.02] flex justify-center items-center gap-2"
-                >
-                    Book a Free Consultation <ArrowRight className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => navigate('/work')}
-                  className="w-full sm:w-auto h-14 px-8 bg-transparent border border-white/10 text-white rounded-full font-medium hover:bg-white/5 hover:border-white/20 transition-all"
-                >
-                    View Our Work
-                </button>
-            </div>
-             
-             {/* Trust / Benefits */}
-            <div className="anim-item border-t border-white/5 pt-8 grid grid-cols-2 gap-y-4 gap-x-8 text-sm text-slate-500 font-medium">
-                <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-blue-500/80" /> 
-                    <span>Conversion Focused</span>
-                </div>
-                <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-blue-500/80" /> 
-                    <span>Scalable Architecture</span>
-                </div>
-            </div>
-        </div>
-
-        {/* RIGHT: Visual */}
-        <div className="visual-container flex justify-center lg:justify-end relative perspective-1000">
-             <TransformationVisual />
-             {/* Contextual Backdrop Blur */}
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-500/5 blur-[90px] -z-10 rounded-full" />
+            {/* Secondary Button */}
+            <Link 
+                to="/work" 
+                className="group w-full sm:w-auto h-14 px-10 rounded-full border border-white/10 text-white font-medium text-lg flex items-center justify-center backdrop-blur-sm transition-all hover:bg-white/5 hover:border-white/20"
+            >
+                View Services
+            </Link>
         </div>
 
       </div>
+
+      <style>{`
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes sheen {
+            0% { transform: translateX(-100%) skewX(-15deg); }
+            100% { transform: translateX(200%) skewX(-15deg); }
+        }
+        .group-hover\\:animate-sheen {
+            animation: sheen 0.6s ease-in-out;
+        }
+      `}</style>
     </section>
   );
 };
