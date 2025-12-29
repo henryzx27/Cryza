@@ -4,7 +4,12 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
+import TrustSection from "./components/TrustSection";
 import AboutSection from "./components/AboutSection";
+import ProcessSection from "./components/ProcessSection";
+import WorkSection from "./components/WorkSection";
+import DiffSection from "./components/DiffSection";
+import CtaSection from "./components/CtaSection";
 import Services from "./pages/Services";
 import WebDesign from "./pages/services/WebDesign";
 import Branding from "./pages/services/Branding";
@@ -24,7 +29,7 @@ export default function App() {
       {!isAdmin && <Navbar />}
 
       <Routes>
-        <Route path="/" element={<><Hero /><AboutSection /></>} />
+        <Route path="/" element={<><Hero /><TrustSection /><AboutSection /><ProcessSection /><WorkSection /><DiffSection /><CtaSection /></>} />
         <Route path="/services" element={<Services />} />
         <Route path="/services/websites" element={<WebDesign />} />
         <Route path="/services/branding" element={<Branding />} />
